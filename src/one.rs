@@ -7,8 +7,8 @@ impl Solution for DayOne {
     type Converted = Vec<u32>;
 
     fn solve() -> Self::Ret {
-        let input = Self::get_input(&Path::new("../static/input_one.txt"))
-            .expect("Failed to get static file");
+        let input =
+            Self::get_input(&Path::new("static/input_one.txt")).expect("Failed to get static file");
 
         let mut converted = Self::convert(&input);
 
