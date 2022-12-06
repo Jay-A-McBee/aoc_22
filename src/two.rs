@@ -3,7 +3,7 @@ use std::path::Path;
 pub struct DayTwo {}
 
 impl Solution for DayTwo {
-    type Ret = u32;
+    type Ret = (u32, u32);
     type Converted = Vec<String>;
 
     fn solve() -> Self::Ret {
@@ -12,7 +12,10 @@ impl Solution for DayTwo {
 
         let converted = Self::convert(&input);
 
-        DayTwo::calc_total_score(&converted, CheatMode::Selection)
+        let score_cheatmode_selection = DayTwo::calc_total_score(&converted, CheatMode::Selection);
+        let score_cheatmode_outcome = DayTwo::calc_total_score(&converted, CheatMode::Outcome);
+
+        (score_cheatmode_selection, score_cheatmode_outcome)
     }
 
     fn convert(input: &str) -> Self::Converted {
@@ -29,6 +32,13 @@ pub enum CheatMode {
     Selection,
 }
 
+const ROCK: u32 = 1;
+const PAPER: u32 = 2;
+const SCISSORS: u32 = 3;
+
+const WIN: u32 = 6;
+const DRAW: u32 = 3;
+
 impl DayTwo {
     // calculate total score based on player one selection and player two selection
     pub fn calc_total_score(input: &Vec<String>, cheat_mode: CheatMode) -> u32 {
@@ -42,42 +52,84 @@ impl DayTwo {
             match player_one {
                 "A" if player_two == "X" => {
                     if cheat_mode == CheatMode::Selection {
-                        acc += 4
+                        acc += ROCK + DRAW;
                     } else {
-                        acc += 3
+                        acc += SCISSORS;
                     }
                 }
-                "A" if player_two == "Y" => acc += 8,
-                "A" if player_two == "Z" => acc += 3,
-                "B" if player_two == "X" => acc += 1,
-                "B" if player_two == "Y" => acc += 5,
-                "B" if player_two == "Z" => acc += 9,
-                "C" if player_two == "X" => acc += 7,
-                "C" if player_two == "Y" => acc += 2,
-                "C" if player_two == "Z" => acc += 6,
-                _ => acc += 0,
+                "A" if player_two == "Y" => {
+                    if cheat_mode == CheatMode::Selection {
+                        acc += PAPER + WIN;
+                    } else {
+                        acc += ROCK + DRAW;
+                    }
+                }
+                "A" if player_two == "Z" => {
+                    if cheat_mode == CheatMode::Selection {
+                        acc += SCISSORS;
+                    } else {
+                        acc += PAPER + WIN;
+                    }
+                }
+                "B" if player_two == "X" => acc += ROCK,
+                "B" if player_two == "Y" => acc += PAPER + DRAW,
+                "B" if player_two == "Z" => acc += SCISSORS + WIN,
+                "C" if player_two == "X" => {
+                    if cheat_mode == CheatMode::Selection {
+                        acc += ROCK + WIN
+                    } else {
+                        acc += PAPER
+                    }
+                }
+                "C" if player_two == "Y" => {
+                    if cheat_mode == CheatMode::Selection {
+                        acc += PAPER
+                    } else {
+                        acc += SCISSORS + DRAW
+                    }
+                }
+                "C" if player_two == "Z" => {
+                    if cheat_mode == CheatMode::Selection {
+                        acc += SCISSORS + DRAW
+                    } else {
+                        acc += ROCK + WIN
+                    }
+                }
+                _ => (),
             };
 
             acc
         })
-    }
-
-    // calculate total score based on player one selection and desired outcome
-    pub fn calc_total_score_with_outcome(input: &Vec<String>) -> u32 {
-        todo!()
     }
 }
 
 #[cfg(test)]
 mod tests {
 
-    use super::DayTwo;
+    use super::{CheatMode, DayTwo};
 
     #[test]
-    fn calculates_score() {
-        let input: Vec<String> = vec![String::from("AY"), String::from("BX"), String::from("CZ")];
+    fn calculates_score_selection_cheatmode() {
+        let input: Vec<String> = vec![
+            String::from("A Y"), // 4
+            String::from("B X"), // 5
+            String::from("C Z"), // 6
+        ];
 
-        let score = DayTwo::calc_total_score(&input);
+        let score = DayTwo::calc_total_score(&input, CheatMode::Selection);
+        println!("{score}");
         assert!(score == 15);
+    }
+
+    #[test]
+    fn calculates_score_outcome_cheatmode() {
+        let input: Vec<String> = vec![
+            String::from("A Y"), // 4
+            String::from("B X"), // 1
+            String::from("C Z"), // 7
+        ];
+
+        let score = DayTwo::calc_total_score(&input, CheatMode::Outcome);
+        assert!(score == 12);
     }
 }

@@ -33,15 +33,9 @@ impl DayOne {
     pub fn find_max(input: &mut Vec<u32>) -> (u32, u32) {
         input.sort_by(|a, b| b.cmp(a));
 
-        let top_3: [u32; 3] = input
-            .iter()
-            .take(3)
-            .copied()
-            .collect::<Vec<u32>>()
-            .try_into()
-            .unwrap();
+        let top_3 = input.iter().take(3).copied().collect::<Vec<u32>>();
 
-        (top_3[0], top_3.iter().sum())
+        (*top_3.get(0).unwrap(), top_3.iter().sum())
     }
 }
 
