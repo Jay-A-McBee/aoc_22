@@ -5,14 +5,17 @@ use std::path::Path;
 pub struct DayThree {}
 
 impl Solution for DayThree {
-    type Ret = u32;
+    type Ret = (u32, u32);
     type Converted = ();
 
     fn solve() -> Self::Ret {
         let input = Self::get_input(&Path::new("static/input_three.txt"))
             .expect("Failed to get static file");
 
-        DayThree::calc_badge_priority(input)
+        (
+            DayThree::calc_priority(&input),
+            DayThree::calc_badge_priority(&input),
+        )
     }
 
     fn convert(input: &str) -> Self::Converted {
@@ -28,7 +31,7 @@ static HI_BASE: u32 = 27;
 
 impl DayThree {
     // total priority for shared values
-    pub fn calc_priority(input: String) -> u32 {
+    pub fn calc_priority(input: &str) -> u32 {
         input
             .split("\n")
             .map(|sack| {
@@ -51,7 +54,7 @@ impl DayThree {
             .sum()
     }
 
-    pub fn calc_badge_priority(input: String) -> u32 {
+    pub fn calc_badge_priority(input: &str) -> u32 {
         let bags = input.split("\n").collect::<Vec<&str>>();
 
         bags.as_slice()
@@ -68,6 +71,7 @@ impl DayThree {
             .sum()
     }
 
+    // finds intersection between up to 3 byte sets
     fn find_shared_value(a: &str, b: &str, c: Option<&str>) -> Option<u8> {
         let set_a: HashSet<u8> = HashSet::from_iter(a.as_bytes().to_owned());
         let set_b: HashSet<u8> = HashSet::from_iter(b.as_bytes().to_owned());
@@ -111,7 +115,7 @@ mod tests {
 
     #[test]
     fn calculates_priority() {
-        let value = String::from("vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw");
+        let value = "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw";
 
         let total = DayThree::calc_priority(value);
 
@@ -120,7 +124,7 @@ mod tests {
 
     #[test]
     fn calculates_badge_priority() {
-        let value = String::from("vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw");
+        let value = "vJrwpWtwJgWrhcsFMMfFFhFp\njqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL\nmmdzqPrVvPwwTWBwg\nwMqvLMZHhHMvwLHjbvcjnnSBnvTQFn\nttgJtRGJQctTZtZT\nCrZsJsPPZsGzwwsLwLmpwMDw";
 
         let total = DayThree::calc_badge_priority(value);
 
