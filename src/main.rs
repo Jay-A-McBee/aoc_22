@@ -1,7 +1,4 @@
-use crate::solutions::one::DayOne;
-use crate::solutions::solve::Solution;
-use crate::solutions::three::DayThree;
-use crate::solutions::two::DayTwo;
+use crate::solutions::{one::DayOne, solve::Solution, three::DayThree, two::DayTwo};
 
 pub mod solutions;
 

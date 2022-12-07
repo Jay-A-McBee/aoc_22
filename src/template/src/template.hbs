@@ -1,0 +1,34 @@
+use super::solve::Solution;
+use std::path::Path;
+
+pub struct {{name}} {}
+
+impl Solution for {{name}} {
+    type Ret = ();
+    type Converted = ();
+
+    fn solve() -> Self::Ret {
+        todo!()
+    }
+
+    fn convert(input: &str) -> Self::Converted {
+        todo!()
+    }
+}
+
+impl {{name}} {
+    pub fn some_method() {
+        todo!()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::{{name}};
+
+    #[test]
+    fn test() {
+       todo!()
+    }
+}

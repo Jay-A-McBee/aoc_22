@@ -85,7 +85,7 @@ impl DayThree {
 
         let shared: Vec<u8> = set_a.intersection(&set_b).copied().collect();
 
-        Some(shared.get(0).copied().unwrap())
+        Some(*shared.get(0).unwrap())
     }
 
     fn get_priority(value: u8) -> u32 {
