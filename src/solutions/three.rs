@@ -23,11 +23,11 @@ impl Solution for DayThree {
     }
 }
 
-static LC_A: u8 = "a".as_bytes()[0];
-static UC_A: u8 = "A".as_bytes()[0];
+const LC_A: u8 = "a".as_bytes()[0];
+const UC_A: u8 = "A".as_bytes()[0];
 
-static LOW_BASE: u32 = 1;
-static HI_BASE: u32 = 27;
+const LOW_BASE: u32 = 1;
+const HI_BASE: u32 = 27;
 
 impl DayThree {
     // total priority for shared values
@@ -35,8 +35,7 @@ impl DayThree {
         input
             .split("\n")
             .map(|sack| {
-                let end = sack.len();
-                let mid = end / 2;
+                let mid = sack.len() / 2;
 
                 let shared = Self::find_shared_value(
                     sack.chars().take(mid).collect::<String>().as_str(),
