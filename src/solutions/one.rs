@@ -1,5 +1,6 @@
-use super::solution::Solution;
+use super::solve::Solution;
 use std::path::Path;
+
 pub struct DayOne {}
 
 impl Solution for DayOne {

@@ -1,7 +1,10 @@
-use advent_of_code::one::DayOne;
-use advent_of_code::solution::Solution;
-use advent_of_code::two::DayTwo;
+use crate::solutions::one::DayOne;
+use crate::solutions::solve::Solution;
+use crate::solutions::three::DayThree;
+use crate::solutions::two::DayTwo;
+
+pub mod solutions;
 
 fn main() {
-    println!("{:?}", DayOne::solve());
+    println!("{:?}", DayThree::solve());
 }
