@@ -89,21 +89,14 @@ impl DayThree {
     }
 
     fn get_priority(value: u8) -> u32 {
-        if Self::is_lowercase(&value) {
+        // value is lowercase
+        if &value >= &LC_A {
             let diff = value - LC_A;
             return LOW_BASE + diff as u32;
         } else {
             let diff = value - UC_A;
             return HI_BASE + diff as u32;
         }
-    }
-
-    fn is_lowercase(value: &u8) -> bool {
-        if value >= &LC_A {
-            return true;
-        }
-
-        false
     }
 }
 
