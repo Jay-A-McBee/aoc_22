@@ -32,42 +32,37 @@ const HI_BASE: u32 = 27;
 impl DayThree {
     // total priority for shared values
     pub fn calc_priority(input: &str) -> u32 {
-        input
-            .split("\n")
-            .map(|sack| {
-                let mid = sack.len() / 2;
+        input.split("\n").fold(0, |mut acc, sack| {
+            let mid = sack.len() / 2;
 
-                let shared = Self::find_shared_value(
-                    sack.chars().take(mid).collect::<String>().as_str(),
-                    sack.chars()
-                        .skip(mid)
-                        .take(mid)
-                        .collect::<String>()
-                        .as_str(),
-                    None,
-                )
-                .unwrap();
+            let shared = Self::find_shared_value(
+                sack.chars().take(mid).collect::<String>().as_str(),
+                sack.chars()
+                    .skip(mid)
+                    .take(mid)
+                    .collect::<String>()
+                    .as_str(),
+                None,
+            )
+            .unwrap();
 
-                Self::get_priority(shared)
-            })
-            .sum()
+            acc += Self::get_priority(shared);
+            acc
+        })
     }
 
     pub fn calc_badge_priority(input: &str) -> u32 {
         let bags = input.split("\n").collect::<Vec<&str>>();
 
-        bags.as_slice()
-            .chunks(3)
-            .map(|group| {
-                let shared = Self::find_shared_value(group[0], group[1], Some(group[2]));
+        bags.as_slice().chunks(3).fold(0, |mut acc, group| {
+            let shared = Self::find_shared_value(group[0], group[1], Some(group[2]));
 
-                if shared.is_some() {
-                    Self::get_priority(shared.unwrap())
-                } else {
-                    0
-                }
-            })
-            .sum()
+            if shared.is_some() {
+                acc += Self::get_priority(shared.unwrap());
+            }
+
+            acc
+        })
     }
 
     // finds intersection between up to 3 byte sets
