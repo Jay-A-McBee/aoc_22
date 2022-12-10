@@ -1,16 +1,11 @@
 use super::solve::Solution;
-use std::collections::btree_map::Values;
 use std::collections::HashMap;
-use std::error::Error;
-use std::hash::Hash;
 use std::path::Path;
 
 #[derive(Debug)]
 pub struct DayFive {
     stacks: HashMap<usize, Stack>,
 }
-
-static mut FINAL_IDX: usize = 0;
 
 impl Solution for DayFive {
     type Ret = (String, String);
@@ -20,10 +15,10 @@ impl Solution for DayFive {
         let input = Self::get_input(&Path::new("static/input_five.txt"))
             .expect("Failed to get static file");
 
-        let (stack, instructions, stack_count) = Self::convert(&input);
+        let (stack_lines, instructions, stack_count) = Self::convert(&input);
 
-        let mut inverted_stacks = DayFive::fill_stacks(&stack, &stack_count);
-        let mut preserved_stacks = DayFive::fill_stacks(&stack, &stack_count);
+        let mut inverted_stacks = DayFive::fill_stacks(&stack_lines, &stack_count);
+        let mut preserved_stacks = DayFive::fill_stacks(&stack_lines, &stack_count);
 
         (
             inverted_stacks
@@ -36,16 +31,15 @@ impl Solution for DayFive {
     }
 
     fn convert(input: &str) -> Self::Converted {
-        let stacks_instructions = input.split("\n\n").collect::<Vec<&str>>();
+        let stack_instruction_lines = input.split("\n\n").collect::<Vec<&str>>();
 
-        let stacks = stacks_instructions.get(0).unwrap();
-        let instructions = stacks_instructions.get(1).unwrap();
+        let stack_lines = stack_instruction_lines.get(0).unwrap();
+        let instruction_lines = stack_instruction_lines.get(1).unwrap();
 
         let mut space_count = 0;
 
-        let stack_iter = stacks.split("\n");
-
-        let clean_stacks = stack_iter
+        let clean_stack_lines = stack_lines
+            .split("\n")
             .filter_map(|line| {
                 let len = line.len();
 
@@ -100,7 +94,7 @@ impl Solution for DayFive {
             .collect::<Vec<Vec<char>>>();
 
         // parse instructions into [[num, num, num]]
-        let clean_instructions: Vec<Vec<usize>> = instructions
+        let clean_instruction_lines: Vec<Vec<usize>> = instruction_lines
             .split("\n")
             .map(|instr| {
                 instr
@@ -117,9 +111,9 @@ impl Solution for DayFive {
             })
             .collect::<Vec<Vec<usize>>>();
 
-        let stack_count = clean_stacks.get(0).unwrap().len();
+        let stack_count = clean_stack_lines.get(0).unwrap().len();
 
-        (clean_stacks, clean_instructions, stack_count)
+        (clean_stack_lines, clean_instruction_lines, stack_count)
     }
 }
 
@@ -152,14 +146,14 @@ pub enum Order {
 }
 
 impl DayFive {
-    pub fn fill_stacks(stacks: &Vec<Vec<char>>, stack_count: &usize) -> Self {
+    pub fn fill_stacks(stack_lines: &Vec<Vec<char>>, stack_count: &usize) -> Self {
         let mut instance = Self {
             stacks: (1..=*stack_count)
                 .map(|val| (val, Stack { stack: Vec::new() }))
                 .collect::<HashMap<usize, Stack>>(),
         };
 
-        stacks.into_iter().rev().for_each(|vals| {
+        stack_lines.into_iter().rev().for_each(|vals| {
             vals.into_iter().enumerate().for_each(|(idx, v)| {
                 let idx = &idx + &1_usize;
                 let stack = instance.stacks.get_mut(&idx).unwrap();
@@ -186,25 +180,22 @@ impl DayFive {
         ordering: Order,
     ) -> &mut Self {
         instructions.iter().for_each(|i| {
-            let (mut insert_items, mut to_idx) = (vec![], &1_usize);
-
             if let [count, from, to] = i.as_slice() {
                 let exit_stack = self.stacks.get_mut(from).unwrap();
                 let len = exit_stack.stack.len();
 
                 let range = if len > *count { len - *count.. } else { 0.. };
 
-                insert_items = if ordering == Order::Preserve {
+                let insert_items = if ordering == Order::Preserve {
                     exit_stack.stack.drain(range).collect()
                 } else {
                     exit_stack.stack.drain(range).rev().collect()
                 };
 
-                to_idx = to;
-            }
+                let enter_stack = self.stacks.get_mut(&to).unwrap();
 
-            let enter_stack = self.stacks.get_mut(&to_idx).unwrap();
-            enter_stack.insert_mult(insert_items);
+                enter_stack.insert_mult(insert_items);
+            }
         });
 
         self

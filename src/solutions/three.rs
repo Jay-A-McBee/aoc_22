@@ -18,7 +18,7 @@ impl Solution for DayThree {
         )
     }
 
-    fn convert(input: &str) -> Self::Converted {
+    fn convert(_: &str) -> Self::Converted {
         ()
     }
 }
