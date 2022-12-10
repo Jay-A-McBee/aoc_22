@@ -1,5 +1,8 @@
 use super::solve::Solution;
+use std::collections::btree_map::Values;
 use std::collections::HashMap;
+use std::error::Error;
+use std::hash::Hash;
 use std::path::Path;
 
 #[derive(Debug)]
@@ -11,20 +14,24 @@ static mut FINAL_IDX: usize = 0;
 
 impl Solution for DayFive {
     type Ret = (String, String);
-    type Converted = (Vec<Vec<char>>, Vec<Vec<usize>>);
+    type Converted = (Vec<Vec<char>>, Vec<Vec<usize>>, usize);
 
     fn solve() -> Self::Ret {
         let input = Self::get_input(&Path::new("static/input_five.txt"))
             .expect("Failed to get static file");
 
-        let (stack, instructions) = Self::convert(&input);
+        let (stack, instructions, stack_count) = Self::convert(&input);
 
-        let mut preserved_stacks = DayFive::fill_stacks(&stack);
-        let mut inverted_stacks = DayFive::fill_stacks(&stack);
+        let mut inverted_stacks = DayFive::fill_stacks(&stack, &stack_count);
+        let mut preserved_stacks = DayFive::fill_stacks(&stack, &stack_count);
 
         (
-            preserved_stacks.process_instructions(&instructions, Order::Preserve),
-            inverted_stacks.process_instructions(&instructions, Order::Invert),
+            inverted_stacks
+                .process_instructions(&instructions, Order::Invert)
+                .get_final_value(&stack_count),
+            preserved_stacks
+                .process_instructions(&instructions, Order::Preserve)
+                .get_final_value(&stack_count),
         )
     }
 
@@ -85,13 +92,6 @@ impl Solution for DayFive {
                 }
 
                 if !finished {
-                    unsafe {
-                        FINAL_IDX = if FINAL_IDX == 0 {
-                            mapped.len()
-                        } else {
-                            FINAL_IDX
-                        }
-                    }
                     return Some(mapped);
                 }
 
@@ -117,7 +117,9 @@ impl Solution for DayFive {
             })
             .collect::<Vec<Vec<usize>>>();
 
-        (clean_stacks, clean_instructions)
+        let stack_count = clean_stacks.get(0).unwrap().len();
+
+        (clean_stacks, clean_instructions, stack_count)
     }
 }
 
@@ -150,19 +152,11 @@ pub enum Order {
 }
 
 impl DayFive {
-    pub fn fill_stacks(stacks: &Vec<Vec<char>>) -> Self {
+    pub fn fill_stacks(stacks: &Vec<Vec<char>>, stack_count: &usize) -> Self {
         let mut instance = Self {
-            stacks: HashMap::from([
-                (1_usize, Stack { stack: Vec::new() }),
-                (2_usize, Stack { stack: Vec::new() }),
-                (3_usize, Stack { stack: Vec::new() }),
-                (4_usize, Stack { stack: Vec::new() }),
-                (5_usize, Stack { stack: Vec::new() }),
-                (6_usize, Stack { stack: Vec::new() }),
-                (7_usize, Stack { stack: Vec::new() }),
-                (8_usize, Stack { stack: Vec::new() }),
-                (9_usize, Stack { stack: Vec::new() }),
-            ]),
+            stacks: (1..=*stack_count)
+                .map(|val| (val, Stack { stack: Vec::new() }))
+                .collect::<HashMap<usize, Stack>>(),
         };
 
         stacks.into_iter().rev().for_each(|vals| {
@@ -176,42 +170,44 @@ impl DayFive {
         instance
     }
 
+    pub fn get_final_value(&mut self, stack_count: &usize) -> String {
+        (1..=*stack_count).fold(String::new(), |mut acc, idx| {
+            let stack = self.stacks.get_mut(&idx).unwrap();
+            if let Some(ch) = stack.remove() {
+                acc.push(ch);
+            }
+            acc
+        })
+    }
+
     pub fn process_instructions(
         &mut self,
         instructions: &Vec<Vec<usize>>,
         ordering: Order,
-    ) -> String {
+    ) -> &mut Self {
         instructions.iter().for_each(|i| {
-            let mut insert_items = vec![];
-            let mut to_idx = &1_usize;
+            let (mut insert_items, mut to_idx) = (vec![], &1_usize);
 
             if let [count, from, to] = i.as_slice() {
-                to_idx = to;
                 let exit_stack = self.stacks.get_mut(from).unwrap();
                 let len = exit_stack.stack.len();
 
                 let range = if len > *count { len - *count.. } else { 0.. };
 
                 insert_items = if ordering == Order::Preserve {
-                    exit_stack.stack.drain(range).rev().collect()
-                } else {
                     exit_stack.stack.drain(range).collect()
+                } else {
+                    exit_stack.stack.drain(range).rev().collect()
                 };
+
+                to_idx = to;
             }
 
             let enter_stack = self.stacks.get_mut(&to_idx).unwrap();
             enter_stack.insert_mult(insert_items);
         });
 
-        unsafe {
-            (1..=FINAL_IDX).fold(String::new(), |mut acc, idx| {
-                let stack = self.stacks.get_mut(&idx).unwrap();
-                if let Some(ch) = stack.remove() {
-                    acc.push(ch);
-                }
-                acc
-            })
-        }
+        self
     }
 }
 
@@ -232,23 +228,27 @@ move 1 from 1 to 2";
 
     #[test]
     fn moves_and_preserves_order() {
-        let (stacks, instructions) = DayFive::convert(DATA);
+        let (stacks, instructions, stack_count) = DayFive::convert(DATA);
 
-        let mut instance = DayFive::fill_stacks(&stacks);
+        let mut instance = DayFive::fill_stacks(&stacks, &stack_count);
 
-        let answer = instance.process_instructions(&instructions, Order::Preserve);
+        let answer = instance
+            .process_instructions(&instructions, Order::Preserve)
+            .get_final_value(&stack_count);
 
-        assert!(answer == String::from("CMZ"))
+        assert!(answer == String::from("MCD"))
     }
 
     #[test]
     fn moves_and_inverts_order() {
-        let (stacks, instructions) = DayFive::convert(DATA);
+        let (stacks, instructions, stack_count) = DayFive::convert(DATA);
 
-        let mut instance = DayFive::fill_stacks(&stacks);
+        let mut instance = DayFive::fill_stacks(&stacks, &stack_count);
 
-        let answer = instance.process_instructions(&instructions, Order::Invert);
+        let answer = instance
+            .process_instructions(&instructions, Order::Invert)
+            .get_final_value(&stack_count);
 
-        assert!(answer == String::from("MCD"))
+        assert!(answer == String::from("CMZ"))
     }
 }
