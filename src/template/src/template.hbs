@@ -8,7 +8,8 @@ impl Solution for {{name}} {
     type Converted = ();
 
     fn solve() -> Self::Ret {
-        todo!()
+        let input = Self::get_input(&Path::new("static/{{input_file_name}}.txt"))
+            .expect("Failed to get static file");
     }
 
     fn convert(input: &str) -> Self::Converted {

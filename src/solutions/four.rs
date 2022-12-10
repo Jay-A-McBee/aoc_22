@@ -1,6 +1,7 @@
 use super::solve::Solution;
 use regex::Regex;
 use std::path::Path;
+
 pub struct DayFour {}
 
 impl Solution for DayFour {

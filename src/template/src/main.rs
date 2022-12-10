@@ -19,12 +19,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let file_name = format!("../solutions/{}.rs", args.next().unwrap());
     let struct_name = args.next().unwrap();
+    let input_file_name = args.next().unwrap();
     let file_path = Path::new(&file_name);
 
     let mut file = File::create(file_path).expect("Failed to create file");
 
-    reg.render_to_write("template", &json!({ "name": struct_name }), &mut file)
-        .expect("Failed to write file");
+    reg.render_to_write(
+        "template",
+        &json!({ "name": struct_name, "input_file_name": input_file_name }),
+        &mut file,
+    )
+    .expect("Failed to write file");
 
     Ok(())
 }

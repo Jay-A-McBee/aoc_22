@@ -35,16 +35,9 @@ impl DayThree {
         input.split("\n").fold(0, |mut acc, sack| {
             let mid = sack.len() / 2;
 
-            let shared = Self::find_shared_value(
-                sack.chars().take(mid).collect::<String>().as_str(),
-                sack.chars()
-                    .skip(mid)
-                    .take(mid)
-                    .collect::<String>()
-                    .as_str(),
-                None,
-            )
-            .unwrap();
+            let (left, right) = sack.split_at(mid);
+
+            let shared = Self::find_shared_value(left, right, None).unwrap();
 
             acc += Self::get_priority(shared);
             acc
