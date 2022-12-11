@@ -13,8 +13,8 @@ impl Solution for DaySix {
             Self::get_input(&Path::new("static/input_six.txt")).expect("Failed to get static file");
 
         (
-            Self::find_unique_idx(&input, 3),
-            Self::find_unique_idx(&input, 13),
+            Self::find_unique_idx(&input, 4),
+            Self::find_unique_idx(&input, 14),
         )
     }
 
