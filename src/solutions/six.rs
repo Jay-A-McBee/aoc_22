@@ -51,8 +51,6 @@ impl DaySix {
     }
 
     pub fn clear_window_and_set(set: &mut HashSet<char>, window: &mut VecDeque<char>, ch: char) {
-        // queue is now the chars that were inserted before and up to
-        // the matching char. We want to remove all of these from the set.
         while let Some(c) = window.pop_front() {
             set.remove(&c);
 
