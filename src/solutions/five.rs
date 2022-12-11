@@ -93,7 +93,7 @@ impl Solution for DayFive {
             })
             .collect::<Vec<Vec<char>>>();
 
-        // parse instructions into [[num, num, num]]
+        // parse instructions into vec of 3 item vecs
         let clean_instruction_lines: Vec<Vec<usize>> = instruction_lines
             .split("\n")
             .map(|instr| {
@@ -131,7 +131,7 @@ impl Stack {
     }
 
     pub fn insert_mult(&mut self, chs: Vec<char>) {
-        self.stack.extend(chs.iter());
+        self.stack.extend(chs);
     }
 
     pub fn remove(&mut self) -> Option<char> {

@@ -1,5 +1,6 @@
 use crate::solutions::{
-    five::DayFive, four::DayFour, one::DayOne, solve::Solution, three::DayThree, two::DayTwo,
+    five::DayFive, four::DayFour, one::DayOne, six::DaySix, solve::Solution, three::DayThree,
+    two::DayTwo,
 };
 
 pub mod solutions;
@@ -7,5 +8,5 @@ pub mod solutions;
 extern crate regex;
 
 fn main() {
-    println!("{:?}", DayFive::solve());
+    println!("{:?}", DaySix::solve());
 }
