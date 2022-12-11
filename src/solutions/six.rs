@@ -37,7 +37,7 @@ impl DaySix {
                 // window contains char
                 // clear out all values from window and set that were inserted before
                 // the matching instance of this char
-                window = Self::clear_window_and_set(&mut set, &mut window, ch);
+                Self::clear_window_and_set(&mut set, &mut window, ch);
                 window.push_back(ch);
                 set.insert(ch);
             } else if len < window_size {
@@ -50,22 +50,17 @@ impl DaySix {
         None
     }
 
-    pub fn clear_window_and_set(
-        set: &mut HashSet<char>,
-        queue: &mut VecDeque<char>,
-        ch: char,
-    ) -> VecDeque<char> {
-        let pos = queue.iter().position(|v| v == &ch).unwrap();
-
-        let keep = queue.split_off(pos + 1);
-
+    pub fn clear_window_and_set(set: &mut HashSet<char>, window: &mut VecDeque<char>, ch: char) {
         // queue is now the chars that were inserted before and up to
         // the matching char. We want to remove all of these from the set.
-        while let Some(c) = queue.pop_front() {
+        while let Some(c) = window.pop_front() {
+            if c == ch {
+                set.remove(&c);
+                break;
+            }
+
             set.remove(&c);
         }
-
-        keep
     }
 }
 
