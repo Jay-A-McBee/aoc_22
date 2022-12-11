@@ -26,7 +26,7 @@ impl Solution for DaySix {
 impl DaySix {
     pub fn find_unique_idx(signals: &str, window_size: usize) -> Option<usize> {
         let mut window = VecDeque::with_capacity(window_size);
-        // use a set to limit the amount of times we run 'position' iterator
+        // use a set so we don't have to iterate over the window on every char
         let mut set = HashSet::new();
         let mut iter = signals.chars().enumerate();
 
@@ -37,7 +37,14 @@ impl DaySix {
                 // window contains char
                 // clear out all values from window and set that were inserted before
                 // the matching instance of this char
-                Self::clear_window_and_set(&mut set, &mut window, ch);
+                while let Some(seen) = window.pop_front() {
+                    set.remove(&seen);
+
+                    if seen == ch {
+                        break;
+                    }
+                }
+
                 window.push_back(ch);
                 set.insert(ch);
             } else if len < window_size {
@@ -48,16 +55,6 @@ impl DaySix {
             }
         }
         None
-    }
-
-    pub fn clear_window_and_set(set: &mut HashSet<char>, window: &mut VecDeque<char>, ch: char) {
-        while let Some(c) = window.pop_front() {
-            set.remove(&c);
-
-            if c == ch {
-                break;
-            }
-        }
     }
 }
 
