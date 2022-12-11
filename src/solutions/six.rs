@@ -31,24 +31,30 @@ impl DaySix {
         let mut set = HashSet::new();
         let mut iter = signals.chars().enumerate();
 
-        while let Some((idx, ch)) = iter.next() {
+        while let Some((idx, curr)) = iter.next() {
+            // pre-insert length
             let prev_len = set.len();
 
-            set.insert(ch);
-            window.push_back(ch);
+            set.insert(curr);
+            window.push_back(curr);
 
+            // post-insert length
             let post_len = set.len();
 
             // we inserted a duplicate
             if post_len == prev_len {
                 while let Some(seen) = window.pop_front() {
-                    if seen != ch {
+                    // There's only one instance of curr in the set now.
+                    // Don't remove it.
+                    if seen != curr {
                         set.remove(&seen);
                     } else {
+                        // We've removed all the necessary values
+                        // from the set and the queue.
                         break;
                     }
                 }
-            } else if set.len() == window_size {
+            } else if post_len == window_size {
                 return Some(idx + 1);
             }
         }
