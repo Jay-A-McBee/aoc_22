@@ -25,32 +25,30 @@ impl Solution for DaySix {
 
 impl DaySix {
     pub fn find_unique_idx(signals: &str, window_size: usize) -> Option<usize> {
+        // queue of chars
         let mut window = VecDeque::with_capacity(window_size);
         // use a set so we don't have to iterate over the window on every char
         let mut set = HashSet::new();
         let mut iter = signals.chars().enumerate();
 
         while let Some((idx, ch)) = iter.next() {
-            let len = window.len();
+            let prev_len = set.len();
 
-            if set.contains(&ch) {
-                // window contains char
-                // clear out all values from window and set that were inserted before
-                // the matching instance of this char
+            set.insert(ch);
+            window.push_back(ch);
+
+            let post_len = set.len();
+
+            // we inserted a duplicate
+            if post_len == prev_len {
                 while let Some(seen) = window.pop_front() {
-                    set.remove(&seen);
-
-                    if seen == ch {
+                    if seen != ch {
+                        set.remove(&seen);
+                    } else {
                         break;
                     }
                 }
-
-                window.push_back(ch);
-                set.insert(ch);
-            } else if len < window_size {
-                window.push_back(ch);
-                set.insert(ch);
-            } else {
+            } else if set.len() == window_size {
                 return Some(idx + 1);
             }
         }
@@ -76,7 +74,7 @@ mod tests {
         assert!(
             cases
                 .iter()
-                .all(|(case, expected)| { DaySix::find_unique_idx(case, 3) == *expected })
+                .all(|(case, expected)| { DaySix::find_unique_idx(case, 4) == *expected })
                 == true
         )
     }
@@ -94,7 +92,7 @@ mod tests {
         assert!(
             cases
                 .iter()
-                .all(|(case, expected)| { DaySix::find_unique_idx(case, 13) == *expected })
+                .all(|(case, expected)| { DaySix::find_unique_idx(case, 14) == *expected })
                 == true
         )
     }
