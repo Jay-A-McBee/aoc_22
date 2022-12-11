@@ -54,12 +54,11 @@ impl DaySix {
         // queue is now the chars that were inserted before and up to
         // the matching char. We want to remove all of these from the set.
         while let Some(c) = window.pop_front() {
+            set.remove(&c);
+
             if c == ch {
-                set.remove(&c);
                 break;
             }
-
-            set.remove(&c);
         }
     }
 }
