@@ -44,13 +44,12 @@ impl DaySix {
             // we inserted a duplicate
             if post_len == prev_len {
                 while let Some(seen) = window.pop_front() {
-                    // There's only one instance of curr in the set now.
-                    // Don't remove it.
+                    // Remove values from the set that aren't curr.
                     if seen != curr {
                         set.remove(&seen);
                     } else {
-                        // We've removed all the necessary values
-                        // from the set and the queue.
+                        // We matched curr. We've removed all the necessary
+                        // values from the set and window.
                         break;
                     }
                 }
