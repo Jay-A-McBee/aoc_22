@@ -28,7 +28,7 @@ impl DaySix {
         // queue of chars
         let mut window = VecDeque::with_capacity(window_size);
         // use a set so we don't have to iterate over the window on every char
-        let mut set = HashSet::new();
+        let mut set = HashSet::with_capacity(window_size);
         let mut iter = signals.chars().enumerate();
 
         while let Some((idx, curr)) = iter.next() {
