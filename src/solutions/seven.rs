@@ -127,7 +127,7 @@ impl DaySeven {
 
         let mut all_dirs: Vec<i32> = Vec::with_capacity(node_stack.len());
 
-        let mut iter = node_stack.iter().rev().peekable();
+        let mut iter = node_stack.iter().rev();
 
         while let Some(Directory { name, contents }) = iter.next() {
             let total: i32 = contents
