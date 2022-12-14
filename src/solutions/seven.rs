@@ -129,7 +129,7 @@ impl DaySeven {
 
         let mut iter = node_stack.iter().rev().peekable();
 
-        while let Some(Directory { name, contents, .. }) = iter.next() {
+        while let Some(Directory { name, contents }) = iter.next() {
             let total: i32 = contents
                 .iter()
                 .map(|c| match c {
